@@ -1,0 +1,31 @@
+dist: bionic
+
+language: generic
+
+branches:
+  only:
+  - master
+
+env: 
+
+sudo: required
+
+git:
+  depth: 1
+
+# https://stackoverflow.com/questions/35942754/how-to-save-username-and-password-in-git
+before_install:
+  - git config --global user.name "worksg"
+  - git config --global user.email "571940753@qq.com"
+  # - git config --global credential.helper 'cache --timeout=3600'
+  - git config --global url."https://api:${travis_ci_token}@github.com/".insteadOf "https://github.com/"
+  - git config --global url."https://ssh:${travis_ci_token}@github.com/".insteadOf "ssh://git@github.com/"
+  - git config --global url."https://git:${travis_ci_token}@github.com/".insteadOf "git@github.com:"
+  - chmod u+x auto-update.sh
+
+install:
+  - ./auto-update.sh
+
+before_script:
+
+script:
