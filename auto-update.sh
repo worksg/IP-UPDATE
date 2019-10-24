@@ -5,6 +5,10 @@ command -v 'tar' &>/dev/null || exit 1
 command -v 'sha256sum' &>/dev/null || exit 1
 command -v 'awk' &>/dev/null || exit 1
 
+source travis-ci-git-commit.bash
+
+travis-branch-commit-init
+
 ipv4_url='https://raw.github.com/17mon/china_ip_list/master/china_ip_list.txt'
 ipv6_url='https://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest'
 domains_china='https://raw.github.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf'
