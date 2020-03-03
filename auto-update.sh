@@ -18,7 +18,7 @@ mkdir download_temp
 cd download_temp
 
 curl -4sSkL "$ipv4_url" -o addr_ipv4.txt
-curl -4sSkL "$ipv6_url" -o addr_ipv6.txt
+curl -4sSkL "$ipv6_url" -o delegated-apnic-latest
 curl -4sSkL "$domains_china" -o domains_china.txt
 curl -4sSkL "$domains_gfw" -o domains_gfw.txt
 
@@ -29,11 +29,20 @@ arrayname=( addr_ipv4 addr_ipv6 domains_china domains_gfw )
 for filename in "${arrayname[@]}"
 do
     if [ -f "../${filename}.tar.gz" ]; then
-        new_sha256=`sha256sum "${filename}.txt" | awk '{ printf $1 }'`
-        old_sha256=`tar zxf "../${filename}.tar.gz" -O | sha256sum - | awk '{ printf $1 }'`
-        if [ "$new_sha256" != "$old_sha256" ]; then 
-            tar czf "${filename}.tar.gz" "${filename}.txt"
-            mv -f "${filename}.tar.gz" "../${filename}.tar.gz"
+        if [ $filename = "addr_ipv6" ]; then
+            tar zxf "../${filename}.tar.gz" -C .
+            if [ -n "$(diff delegated-apnic-latest addr_ipv6.txt | grep "|ipv6|.*|allocated$")" ]; then
+                mv -f delegated-apnic-latest addr_ipv6.txt
+                tar czf "${filename}.tar.gz" "${filename}.txt"
+                mv -f "${filename}.tar.gz" "../${filename}.tar.gz"
+            fi
+        else
+            new_sha256=`sha256sum "${filename}.txt" | awk '{ printf $1 }'`
+            old_sha256=`tar zxf "../${filename}.tar.gz" -O | sha256sum - | awk '{ printf $1 }'`
+            if [ "$new_sha256" != "$old_sha256" ]; then 
+                tar czf "${filename}.tar.gz" "${filename}.txt"
+                mv -f "${filename}.tar.gz" "../${filename}.tar.gz"
+            fi
         fi
     else
         tar czf "${filename}.tar.gz" "${filename}.txt"
